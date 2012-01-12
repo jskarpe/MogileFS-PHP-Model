@@ -1,6 +1,12 @@
 MogileFS PHP Model
 ==================
 
+File model for MogileFS stored file, with lazyloading of
+properties such as class and domain if requested.
+
+This model also include a mysql hack to do bulk operations for
+looking up paths.
+
 Example usage:
 --------------
 
