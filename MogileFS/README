@@ -1,0 +1,35 @@
+MogileFS PHP Model
+==================
+
+Example usage:
+--------------
+
+[source,php]
+----
+	<?php
+	// Save
+	$mapper = new MogileFS_File_Mapper($config); // see tests/config.php
+	$file = new MogileFS_File();
+	$file->setKey('motd');
+	$file->setFile('/etc/motd');
+	$savedFile = $mapper->save($file);
+	
+	// Find
+	$file = $mapper->find('motd');
+	var_dump($file->getPaths());
+----
+
+
+Testing
+-------
+Tests where performed on Ubuntu 11.10.
+
+To get tests running I installed MogileFS as described in the quickstart:
+https://code.google.com/p/mogilefs/wiki/QuickStartGuide
+
+I also did one additional command:
+-----
+	mogadm class add toast dev --mindevcount=3
+-----
+
+tests/config.php is set up according to the above setup
