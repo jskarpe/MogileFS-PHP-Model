@@ -7,21 +7,19 @@ properties such as class and domain if requested.
 This model also include a mysql hack to do bulk operations for
 looking up paths.
 
-Example usage:
---------------
-
+.Example usage
 ----
-	<?php
-	// Save
-	$mapper = new MogileFS_File_Mapper($config); // see tests/config.php
-	$file = new MogileFS_File();
-	$file->setKey('motd');
-	$file->setFile('/etc/motd');
-	$savedFile = $mapper->save($file);
-	
-	// Find
-	$file = $mapper->find('motd');
-	var_dump($file->getPaths());
+<?php
+// Save
+$mapper = new MogileFS_File_Mapper($config); // see tests/config.php
+$file = new MogileFS_File();
+$file->setKey('motd');
+$file->setFile('/etc/motd');
+$savedFile = $mapper->save($file);
+
+// Find
+$file = $mapper->find('motd');
+var_dump($file->getPaths());
 ----
 
 
