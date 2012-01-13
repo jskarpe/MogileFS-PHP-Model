@@ -10,7 +10,6 @@ looking up paths.
 Example usage:
 --------------
 
-[source]
 ----
 	<?php
 	// Save

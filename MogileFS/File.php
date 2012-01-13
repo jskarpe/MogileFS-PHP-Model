@@ -176,6 +176,7 @@ class MogileFS_File
 	public function setFile($file)
 	{
 		if (!file_exists($file)) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' File does not exist: ' . $file,
 					MogileFS_Exception::INVALID_ARGUMENT);
 		}
@@ -261,6 +262,7 @@ class MogileFS_File
 	public function getMapper()
 	{
 		if (!$this->_mapper instanceof MogileFS_File_Mapper) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' No mapper set',
 					MogileFS_Exception::MISSING_MAPPER);
 		}

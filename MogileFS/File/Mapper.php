@@ -34,6 +34,7 @@ class MogileFS_File_Mapper
 		if (!$this->_adapter instanceof MogileFS_File_Mapper_Adapter_Abstract) {
 			$options = $this->getOptions();
 			if (!isset($options['adapter'])) {
+				require_once 'MogileFS/Exception.php';
 				throw new MogileFS_Exception(
 						__METHOD__
 								. ' No adapter set, and no \'adapter\' section with adapter options found',
@@ -46,12 +47,15 @@ class MogileFS_File_Mapper
 			}
 			
 			if (!isset($options['defaultadapter'])) {
+				require_once 'MogileFS/Exception.php';
 				throw new MogileFS_Exception(
 						__METHOD__
 								. ' No adapter set, and no \'defaultadapter\' option with classname found in options',
 						MogileFS_Exception::MISSING_OPTION);
 			}
 
+			$adapterFile = str_replace('_', '/', $options['defaultadapter']).'.php';
+			require_once $adapterFile;
 			$this->setAdapter(new $options['defaultadapter']($options['adapter']));
 		}
 		return $this->_adapter;
@@ -59,6 +63,7 @@ class MogileFS_File_Mapper
 
 	public function find($key, $eagerLoad = false)
 	{
+		require_once 'MogileFS/File.php';
 		$file = new MogileFS_File();
 		$file->setKey($key);
 		$file->setMapper($this);

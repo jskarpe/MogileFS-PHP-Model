@@ -36,6 +36,7 @@ class MogileFS_File_Mapper_Adapter_Test extends MogileFS_File_Mapper_Adapter_Abs
 	{
 		$options = $this->getOptions();
 		if (!isset($options['domain'])) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Mandatory option \'domain\' missing from options',
 					MogileFS_Exception::MISSING_OPTION);

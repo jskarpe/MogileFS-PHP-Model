@@ -6,12 +6,14 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 
 	public function findPaths($key)
 	{
+		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
 				MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function findInfo($key)
 	{
+		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
 				MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
@@ -20,6 +22,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 	{
 		$options = $this->getOptions();
 		if (!isset($options['domain'])) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' No \'domain\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
@@ -67,24 +70,28 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 
 	public function listKeys($prefix = null, $lastKey = null, $limit = null)
 	{
+		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
 				MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function saveFile($key, $file, $class = null)
 	{
+		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
 				MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function rename($fromKey, $toKey)
 	{
+		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
 				MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function delete($key)
 	{
+		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
 				MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
@@ -172,6 +179,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 		$options = $this->getOptions();
 
 		if (!isset($options['pdo_options'])) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__
 							. ' No mysql client set, and no \'pdo_options\' option found in config',
@@ -179,12 +187,14 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 		}
 
 		if (!isset($options['username'])) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' No mysql client set, and no \'username\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
 
 		if (!isset($options['password'])) {
+			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' No mysql client set, and no \'password\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
