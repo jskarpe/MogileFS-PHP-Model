@@ -1,6 +1,18 @@
 <?php
+/**
+ * 
+ * Abstract class for MogileFS adapters
+ * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
+ * @package MogileFS
+ * 
+ */
 abstract class MogileFS_File_Mapper_Adapter_Abstract
 {
+	/**
+	 * 
+	 * Configuration options for adapter
+	 * @var array
+	 */
 	private $options;
 	
 	public function __construct(array $options = null)

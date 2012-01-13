@@ -1,8 +1,25 @@
 <?php
-
+/**
+ * 
+ * Mapper for MogileFS_File which populates file model with properties returned from adapters
+ * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
+ * @package MogileFS
+ *
+ */
 class MogileFS_File_Mapper
 {
+	/**
+	 * 
+	 * Configuration options for mapper
+	 * @var array
+	 */
 	protected $_options;
+	
+	/**
+	 * 
+	 * Holds instance of adapter
+	 * @var MogileFS_File_Mapper_Adapter_Abstract
+	 */
 	protected $_adapter;
 
 	public function __construct(array $options = null)
@@ -78,10 +95,6 @@ class MogileFS_File_Mapper
 		if (false !== $eagerLoad) {
 			$info = $adapter->findInfo($key);
 			$file->fromArray($info);
-		} else {
-			// Get fid from path
-			preg_match('/\d+\.fid$/', reset($result), $match);
-			$file->setFid($match[0]);
 		}
 
 		return $file;

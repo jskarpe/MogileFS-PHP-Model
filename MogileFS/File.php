@@ -1,8 +1,10 @@
 <?php
 /**
+ * 
  * File model class for files stored in MogileFS
  * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
- *
+ * @package MogileFS
+ * 
  */
 class MogileFS_File
 {
@@ -188,7 +190,7 @@ class MogileFS_File
 	/**
 	 * 
 	 * Get local copy of file stored in MogileFS
-	 * Default is to lazy load file on demand
+	 * Default is to lazy load (download) file on demand
 	 * @param boolean $fetch
 	 */
 	public function getFile($fetch = null)
@@ -259,6 +261,12 @@ class MogileFS_File
 		return $this;
 	}
 
+	/**
+	 * 
+	 * 
+	 * @throws MogileFS_Exception
+	 * @return MogileFS_File_Mapper
+	 */
 	public function getMapper()
 	{
 		if (!$this->_mapper instanceof MogileFS_File_Mapper) {

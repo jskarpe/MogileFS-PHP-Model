@@ -25,7 +25,7 @@ class TestAdapterTest extends PHPUnit_Framework_TestCase
 			'key' => $key, 'file' => $file
 		));
 
-		$result = $testAdapter->saveFile($key, $testFile);
+		$result = $testAdapter->saveFile($key, $testFile->getFile());
 		unlink($file);
 
 		$this->assertArrayHasKey('fid', $result);

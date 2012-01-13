@@ -1,13 +1,20 @@
 MogileFS PHP Model
 ==================
 
-File model for MogileFS stored file, with lazyloading of
-properties such as class and domain if requested.
+This library is an abstraction model for a file stored in MogileFS.
+The idea is to have a clearly defined api to use for storing and retrieving 
+files from MogileFS.
 
-This model also include a mysql hack to do bulk operations for
-looking up paths.
+On find, only paths are retrieved by default, while other properties like domain
+and class are lazyloaded on request.
 
-=== Example usage
+This model also include a mysql adapter, as a hack to do bulk operations for
+looking up multiple paths in one operation. This adapter is likely to break for
+future MogileFS versions, but MogileFS currently doesn't support getting multiple
+paths in one query natively.
+
+Example usage
+-------------
 
 -----
 <?php
@@ -23,7 +30,40 @@ $file = $mapper->find('motd');
 var_dump($file->getPaths());
 -----
 
-=== Testing
+Config options
+--------------
+
+Options should be injected into MogileFS_File_Mapper constructor in an associative array.
+
+For an example see: tests/config.php
+
+=== Mapper options:
+
+* adapter (required)
+* defaultadapter
+
+The 'adapter' option can either be an instance of MogileFS_File_Mapper_Adapter_Abstract, 
+or a set of adapter options for the 'defaultadapter' which should contain class name
+of adapter to instantiate if no adapter is set.
+
+=== Tracker adapter options:
+
+* domain (required)
+* tracker (required)
+* noverify
+* pathcount
+
+The 'tracker' section should contain an array of MogileFS trackers.
+
+=== Mysql adapter options:
+
+* domain (required)
+* pdo_options (required)
+* username
+* password
+
+Testing
+-------
 
 Tests where performed on Ubuntu 11.10.
 
@@ -36,3 +76,22 @@ I also did one additional command:
 -----
 
 tests/config.php is set up according to the above setup
+
+Design
+------
+
+All properties except key and paths are lazyloaded on request. This means that no
+request is sent to the backend server for file info until the getClass() or similar
+is called within the MogileFS_File model.
+
+MogileFS::getFile() downloads the file to a temporary local file, which should to be
+deleted by application after use.
+
+Adapters interact with datasource, while mapper populate the File model from
+adapter output. All adapters have to produce the same output for mapper to 
+parse it correctly.
+
+A test adapter is implemented to allow for application testing without having a live
+MogileFS running
+
+Naming convention, and design tries to follow that of the Zend Framework 1.x

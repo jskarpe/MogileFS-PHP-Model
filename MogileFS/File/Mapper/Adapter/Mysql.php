@@ -1,4 +1,12 @@
 <?php
+/**
+ * 
+ * Mysql adapter for MogileFS. This is a hack to do bulk operations for paths.
+ * This is likely to be obsoleted by native MogileFS at a later stage.
+ * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
+ * @package MogileFS
+ *
+ */
 class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Abstract
 {
 	protected $_hostsUp;

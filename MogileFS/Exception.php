@@ -1,4 +1,11 @@
 <?php
+/**
+ * 
+ * Extended Exception to include error codes
+ * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
+ * @package MogileFS
+ *
+ */
 class MogileFS_Exception extends Exception
 {
 	const EMPTY_ARGUMENT = 100;

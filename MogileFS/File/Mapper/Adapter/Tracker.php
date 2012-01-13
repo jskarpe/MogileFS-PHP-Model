@@ -3,7 +3,8 @@
  * 
  * Adapter for native MogileFS socket connection
  * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
- *
+ * @package MogileFS
+ * 
  */
 class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_Abstract
 {
@@ -363,7 +364,7 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 
 		if (!is_resource($this->_socket) || feof($this->_socket)) {
 			require_once 'MogileFS/Exception.php';
-			throw new MogileFS_Exception(__METHOD__ . 'Failed to obtain connection',
+			throw new MogileFS_Exception(__METHOD__ . ' Failed to obtain connection',
 					MogileFS_Exception::CONNECT_FAILED);
 		} else {
 			return $this->_socket;

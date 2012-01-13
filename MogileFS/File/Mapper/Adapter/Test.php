@@ -3,11 +3,11 @@
  *
  * Test adapter for MogileFS
  * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
+ * @package MogileFS
  *
  */
 class MogileFS_File_Mapper_Adapter_Test extends MogileFS_File_Mapper_Adapter_Abstract
 {
-
 	protected $_saveResult = array();
 
 	public function findPaths($key)
@@ -48,7 +48,7 @@ class MogileFS_File_Mapper_Adapter_Test extends MogileFS_File_Mapper_Adapter_Abs
 				'key' => $key,
 				'size' => 123,
 				'paths' => array(
-					'http://127.0.0.1/' . $fid . '.fid'
+					'file://' . $file
 				),
 				'domain' => $options['domain'],
 				'class' => (null === $class) ? 'default' : $class
@@ -59,6 +59,10 @@ class MogileFS_File_Mapper_Adapter_Test extends MogileFS_File_Mapper_Adapter_Abs
 
 	public function rename($fromKey, $toKey)
 	{
+		if (isset($this->_saveResult[$fromKey])) {
+			$this->_saveResult[$toKey] = $this->_saveResult[$fromKey];
+			unset($this->_saveResult[$fromKey]);
+		}
 		return;
 	}
 
