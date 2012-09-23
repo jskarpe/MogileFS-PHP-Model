@@ -1,4 +1,7 @@
 <?php
+require_once 'MogileFS/File.php';
+require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
+require_once 'MogileFS/File/Mapper/Adapter/Test.php';
 /**
  *
  * Test MogileFS_File_Mapper_Adapter_Test functions

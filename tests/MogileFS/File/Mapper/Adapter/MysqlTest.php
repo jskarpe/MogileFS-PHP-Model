@@ -1,4 +1,7 @@
 <?php
+require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
+require_once 'MogileFS/File/Mapper/Adapter/Mysql.php';
+require_once 'MogileFS/File/Mapper/Adapter/Tracker.php';
 /**
  * 
  * Test case for mysql read only adapter

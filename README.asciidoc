@@ -39,7 +39,7 @@ For an example see: tests/config.php
 
 === Mapper options:
 
-* adapter (required)
+* adapter
 * defaultadapter
 
 The 'adapter' option can either be an instance of MogileFS_File_Mapper_Adapter_Abstract, 

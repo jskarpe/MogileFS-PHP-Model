@@ -2,7 +2,7 @@
 /**
  * 
  * Mysql adapter for MogileFS. This is a hack to do bulk operations for paths.
- * This is likely to be obsoleted by native MogileFS at a later stage.
+ * This is likely to be obsoleted by native MogileFS tracker at a later time.
  * @author Jon Skarpeteig <jon.skarpeteig@gmail.com>
  * @package MogileFS
  *
@@ -28,6 +28,10 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 
 	public function fetchAllPaths(array $keys)
 	{
+		if (empty($keys)) {
+			return array();
+		}
+		
 		$options = $this->getOptions();
 		if (!isset($options['domain'])) {
 			require_once 'MogileFS/Exception.php';
@@ -35,6 +39,8 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
 
+		$hosts = $this->getHostsUp();
+		$keyList = ':key_' . implode(',:key_', array_keys($keys));
 		$query = "
 			SELECT
 			 f.fid,
@@ -51,13 +57,19 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 			INNER JOIN host h ON h.hostid = de.hostid
 			WHERE
 			 d.namespace = '" . $options['domain'] . "'
-			 AND h.hostid IN (" . implode(',', $this->getHostsUp()) . ")
-			 AND f.dkey IN('" . implode("','", $keys) . "')
+			 AND h.hostid IN (" . implode(',', $hosts) . ")
+			 AND f.dkey IN(" . $keyList . ")
 			GROUP BY f.fid
 		";
 
+		$parms = array_combine(explode(",", $keyList), $keys);
 		$stm = $this->getMysql()->prepare($query);
-		$stm->execute();
+		$result = $stm->execute($parms);
+		if (!$result) {
+			$error = $stm->errorInfo();
+			throw new MogileFS_Exception(__METHOD__ . ' ' . $error[2],
+					MogileFS_Exception::READ_FAILED);
+		}
 		$resultArray = $stm->fetchAll();
 
 		// TODO implement ZoneLocal emulation
@@ -71,6 +83,13 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 					. substr($fid, 0, 1) . '/' . substr($fid, 1, 3) . '/' . substr($fid, 4, 3)
 					. '/' . $fid . '.fid';
 			$paths[$row['dkey']][] = $uri;
+		}
+
+		// Return empty array if no alive path is found
+		foreach ($keys as $key) {
+			if (!isset($paths[$key])) {
+				$paths[$key] = array();
+			}
 		}
 
 		return $paths;
@@ -122,27 +141,34 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 			$hostsUp = array();
 
 			// Find all servers
-			$query = "
-			SELECT hostid,hostip,http_port,http_get_port FROM host h WHERE status = 'alive';
-		";
+			$query = "SELECT hostid,hostip,http_port,http_get_port FROM host h WHERE status = 'alive'";
 			$stm = $this->getMysql()->prepare($query);
-			$stm->execute();
+			$result = $stm->execute();
+			if (!$result) {
+				$error = $stm->errorInfo();
+				throw new MogileFS_Exception(__METHOD__ . ' ' . $error[2],
+						MogileFS_Exception::READ_FAILED);
+			}
 			$hosts = $stm->fetchAll();
 
 			// Determine what server is online
+			$serversTries = array();
+			$maxRunTime = 0.4;
 			$mh = curl_multi_init();
 			$i = 0;
 			foreach ($hosts as $hostRow) {
 				$port = (empty($hostRow['http_get_port'])) ? $hostRow['http_port']
 						: $hostRow['http_get_port'];
+				$server = $hostRow['hostip'] . ':' . $port;
+				$serversTried[] = $server;
 				$ch[$i] = curl_init();
-				curl_setopt($ch[$i], CURLOPT_URL, $hostRow['hostip'] . ':' . $port);
+				curl_setopt($ch[$i], CURLOPT_URL, $server);
 				curl_setopt($ch[$i], CURLOPT_CONNECTTIMEOUT, 1);
 				curl_setopt($ch[$i], CURLOPT_TIMEVALUE, 1);
 				curl_setopt($ch[$i], CURLOPT_FOLLOWLOCATION, false);
-				curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, 1);
+				curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, false); // Don't echo result, return instead
 				curl_setopt($ch[$i], CURLOPT_HEADER, 0); // Don't include the header
-				//curl_setopt($ch[$i], CURLOPT_FRESH_CONNECT, 1); //Don't use cache
+				curl_setopt($ch[$i], CURLOPT_FRESH_CONNECT, 1); // Don't use cache
 				curl_multi_add_handle($mh, $ch[$i]);
 				$i++;
 			}
@@ -154,8 +180,8 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 			do {
 				$r = explode(' ', microtime());
 				$r = $r[1] + $r[0];
-				if (($r - $runtime) > 0.4) {
-					// Only run for 0.4s
+				if (($r - $runtime) > $maxRunTime) {
+					// Only run for $maxRunTime seconds
 					break;
 				}
 				curl_multi_exec($mh, $running);
@@ -172,6 +198,13 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 				$i++;
 			}
 			curl_multi_close($mh);
+
+			if (empty($hostsUp)) {
+				throw new MogileFS_Exception(
+						__METHOD__ . ' No server responsed within ' . $maxRunTime
+								. ' seconds. Tried: ' . implode(',', $serversTried),
+						MogileFS_Exception::READ_FAILED);
+			}
 
 			$this->_hostsUp = $hostsUp;
 		}
@@ -208,7 +241,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
 
-		$this->_mysql = $pdo = new PDO('mysql:' . $options['pdo_options'], $options['username'],
+		$this->_mysql = new PDO('mysql:' . $options['pdo_options'], $options['username'],
 				$options['password']);
 
 		return $this->_mysql;

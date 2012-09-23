@@ -63,17 +63,11 @@ class MogileFS_File_Mapper
 				return $this->_adapter;
 			}
 			
-			if (!isset($options['defaultadapter'])) {
-				require_once 'MogileFS/Exception.php';
-				throw new MogileFS_Exception(
-						__METHOD__
-								. ' No adapter set, and no \'defaultadapter\' option with classname found in options',
-						MogileFS_Exception::MISSING_OPTION);
-			}
+			$default = (isset($options['defaultadapter'])) ? $options['defaultadapter'] : 'MogileFS_File_Mapper_Adapter_Tracker';
 
-			$adapterFile = str_replace('_', '/', $options['defaultadapter']).'.php';
+			$adapterFile = str_replace('_', '/', $default).'.php';
 			require_once $adapterFile;
-			$this->setAdapter(new $options['defaultadapter']($options['adapter']));
+			$this->setAdapter(new $default($options['adapter']));
 		}
 		return $this->_adapter;
 	}
@@ -90,6 +84,7 @@ class MogileFS_File_Mapper
 		if (null === $result) {
 			return null;
 		}
+		
 		$file->setPaths($result);
 
 		if (false !== $eagerLoad) {
@@ -146,12 +141,13 @@ class MogileFS_File_Mapper
 		}
 
 		$localFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $file->getKey();
+		
 		$fp = fopen($localFile, 'w');
 		$url = reset($file->getPaths());
 
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_FILE, $fp);
-		$data = curl_exec($ch);
+		curl_exec($ch);
 		curl_close($ch);
 		fclose($fp);
 
@@ -173,12 +169,17 @@ class MogileFS_File_Mapper
 			throw new MogileFS_Exception(__METHOD__ . ' Cannot save invalid file model',
 					MogileFS_Exception::INVALID_ARGUMENT);
 		}
-
-		$result = $this->getAdapter()
+		
+		$file->setMapper($this);
+		$this->getAdapter()
 				->saveFile($file->getKey(), $file->getFile(false), $file->getClass(false));
 		
-		$storedFile = $this->find($file->getKey(), true);
-		return $storedFile;
+		$storedFile = $this->find($file->getKey(), false);
+		$storedFileArray = $storedFile->toArray();
+		unset($storedFileArray['file']); // MogileFS has no information about local file
+		$file->fromArray($storedFileArray);
+		
+		return $file;
 	}
 
 	public function delete($key)

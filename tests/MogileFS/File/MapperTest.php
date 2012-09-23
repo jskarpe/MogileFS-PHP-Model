@@ -1,4 +1,8 @@
 <?php
+require_once 'MogileFS/File.php';
+require_once 'MogileFS/File/Mapper.php';
+require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
+require_once 'MogileFS/File/Mapper/Adapter/Test.php';
 /**
  *
  * Test MogileFS_File_Mapper functions
@@ -69,7 +73,13 @@ class MapperTest extends PHPUnit_Framework_TestCase
 		$result = $mapper->fetchAll(array(
 					$this->_testFile->getKey()
 				), true);
-		$this->assertEquals($savedFile, reset($result));
+		
+		$getFile = reset($result);
+		
+		// Don't download file - ignore comparison
+		$getFile->setFile($savedFile->getFile());
+		
+		$this->assertEquals($savedFile, $getFile);
 	}
 	
 	public function testFileLazyloader()
@@ -117,25 +127,7 @@ class MapperTest extends PHPUnit_Framework_TestCase
 		$this->fail('Did not get MogileFS_Exception exception');
 	}
 
-	/**
-	 * Argument validation test
-	 * Expecting MogileFS_Exception with 1XX code
-	 */
-	public function testNoDefaultAdapter()
-	{
-		$mapper = new MogileFS_File_Mapper(array(
-			'adapter' => array()
-		));
-		try {
-			$mapper->getAdapter(); // No adapter set
-		} catch (MogileFS_Exception $exc) {
-			$this->assertLessThan(200, $exc->getCode(), 'Got unexpected exception code');
-			$this->assertGreaterThanOrEqual(100, $exc->getCode(), 'Got unexpected exception code');
-			return;
-		}
-		$this->fail('Did not get MogileFS_Exception exception');
-	}
-	
+
 	/**
 	* Argument validation test
 	* Expecting MogileFS_Exception with 1XX code

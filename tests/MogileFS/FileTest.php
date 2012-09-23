@@ -1,4 +1,6 @@
 <?php
+require_once 'MogileFS/File.php';
+require_once 'MogileFS/File/Mapper.php';
 /**
  *
  * Test MogileFS_File model
@@ -85,23 +87,6 @@ class FileTest extends PHPUnit_Framework_TestCase
 		$file = new MogileFS_File();
 		try {
 			$file->setFile('/tmp/me_n0_ex1st'); // Not valid value
-		} catch (MogileFS_Exception $exc) {
-			$this->assertLessThan(200, $exc->getCode(), 'Got unexpected exception code');
-			$this->assertGreaterThanOrEqual(100, $exc->getCode(), 'Got unexpected exception code');
-			return;
-		}
-		$this->fail('Did not get MogileFS_Exception exception');
-	}
-	
-	/**
-	* Argument validation test
-	* Expecting MogileFS_Exception with 1XX code
-	*/
-	public function testGetEmtpyMapperValidation()
-	{
-		$file = new MogileFS_File();
-		try {
-			$file->getMapper(); // No mapper set
 		} catch (MogileFS_Exception $exc) {
 			$this->assertLessThan(200, $exc->getCode(), 'Got unexpected exception code');
 			$this->assertGreaterThanOrEqual(100, $exc->getCode(), 'Got unexpected exception code');

@@ -24,5 +24,6 @@ class MogileFS_Exception extends Exception
 	const FOPEN_FAILIURE = 157;
 	const FILE_NOT_FOUND = 158;
 	const TRACKER_ERROR = 159;
+	const SERVER_ERROR = 160;
 	const UNKNOWN_ERROR = 199;
 }

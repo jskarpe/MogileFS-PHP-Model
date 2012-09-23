@@ -1,4 +1,7 @@
 <?php
+require_once 'MogileFS/File.php';
+require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
+require_once 'MogileFS/File/Mapper/Adapter/Tracker.php';
 /**
  * 
  * Test case for tracker (native) adapter
@@ -58,6 +61,7 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 		} catch (MogileFS_Exception $e) {
 			// Clean up test data on failiure
 			$this->_tracker->delete($key);
+			throw $e;
 		}
 
 		$info = $this->_tracker->findInfo($key2);

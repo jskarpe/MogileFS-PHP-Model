@@ -63,7 +63,7 @@ class MogileFS_File
 	 * @var MogileFS_File_Mapper
 	 */
 	protected $_mapper;
-	
+
 	public function __construct(array $attributes = null)
 	{
 		if (null !== $attributes) {
@@ -79,14 +79,9 @@ class MogileFS_File
 
 	public function toArray()
 	{
-		return array(
-				'class' => $this->getClass(),
-				'domain' => $this->getDomain(),
-				'fid' => $this->getFid(),
-				'file' => $this->getFile(),
-				'key' => $this->getKey(),
-				'paths' => $this->getPaths(),
-				'size' => $this->getSize()
+		return array('class' => $this->getClass(), 'domain' => $this->getDomain(),
+				'fid' => $this->getFid(), 'file' => $this->getFile(false), 'key' => $this->getKey(),
+				'paths' => $this->getPaths(), 'size' => $this->getSize()
 		);
 	}
 
@@ -127,7 +122,13 @@ class MogileFS_File
 	public function getClass($forceFetch = null)
 	{
 		if ((true === $forceFetch) || (null === $forceFetch && null === $this->_class)) {
-			$this->getMapper()->findInfo($this);
+			if (!$this->getMapper() instanceof MogileFS_File_Mapper) {
+				require_once 'MogileFS/Exception.php';
+				throw new MogileFS_Exception(__METHOD__ . ' No mapper set',
+						MogileFS_Exception::MISSING_MAPPER);
+			}
+			$this->getMapper()
+					->findInfo($this);
 		}
 		return $this->_class;
 	}
@@ -152,7 +153,13 @@ class MogileFS_File
 	public function getDomain($forceFetch = null)
 	{
 		if ((true === $forceFetch) || (null === $forceFetch && null === $this->_domain)) {
-			$this->getMapper()->findInfo($this);
+			if (!$this->getMapper() instanceof MogileFS_File_Mapper) {
+				require_once 'MogileFS/Exception.php';
+				throw new MogileFS_Exception(__METHOD__ . ' No mapper set',
+						MogileFS_Exception::MISSING_MAPPER);
+			}
+			$this->getMapper()
+					->findInfo($this);
 		}
 		return $this->_domain;
 	}
@@ -196,7 +203,13 @@ class MogileFS_File
 	public function getFile($fetch = null)
 	{
 		if ((true === $fetch) || (null === $fetch && !file_exists($this->_file))) {
-			$this->getMapper()->fetchFile($this);
+			if (!$this->getMapper() instanceof MogileFS_File_Mapper) {
+				require_once 'MogileFS/Exception.php';
+				throw new MogileFS_Exception(__METHOD__ . ' No mapper set',
+						MogileFS_Exception::MISSING_MAPPER);
+			}
+			$this->getMapper()
+					->fetchFile($this);
 		}
 		return $this->_file;
 	}
@@ -250,7 +263,13 @@ class MogileFS_File
 	public function getSize($forceFetch = null)
 	{
 		if ((true === $forceFetch) || (null === $forceFetch && null === $this->_size)) {
-			$this->getMapper()->findInfo($this);
+			if (!$this->getMapper() instanceof MogileFS_File_Mapper) {
+				require_once 'MogileFS/Exception.php';
+				throw new MogileFS_Exception(__METHOD__ . ' No mapper set',
+						MogileFS_Exception::MISSING_MAPPER);
+			}
+			$this->getMapper()
+					->findInfo($this);
 		}
 		return $this->_size;
 	}
@@ -263,17 +282,10 @@ class MogileFS_File
 
 	/**
 	 * 
-	 * 
-	 * @throws MogileFS_Exception
-	 * @return MogileFS_File_Mapper
+	 * @return MogileFS_File_Mapper|null
 	 */
 	public function getMapper()
 	{
-		if (!$this->_mapper instanceof MogileFS_File_Mapper) {
-			require_once 'MogileFS/Exception.php';
-			throw new MogileFS_Exception(__METHOD__ . ' No mapper set',
-					MogileFS_Exception::MISSING_MAPPER);
-		}
 		return $this->_mapper;
 	}
 }

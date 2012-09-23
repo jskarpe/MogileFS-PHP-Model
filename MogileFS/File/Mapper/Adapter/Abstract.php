@@ -37,7 +37,6 @@ abstract class MogileFS_File_Mapper_Adapter_Abstract
 	 * 
 	 * Looks up paths for key
 	 * @param string $key
-	 * @param boolean $eagerLoad
 	 * @return array of string uri paths
 	 */
 	abstract function findPaths($key);
