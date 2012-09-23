@@ -18,6 +18,14 @@ Example usage
 
 -----
 <?php
+// Config example
+$config = array(
+	'adapter' => array(
+		'tracker' => array('127.0.0.1','127.0.0.2:1234'),
+		'domain' => 'dev'
+	);
+);
+
 // Save
 $mapper = new MogileFS_File_Mapper($config); // see tests/config.php
 $file = new MogileFS_File();
@@ -50,6 +58,7 @@ of adapter to instantiate if no adapter is set.
 
 * domain (required)
 * tracker (required)
+* request_timeout (seconds)
 * noverify
 * pathcount
 
@@ -65,7 +74,7 @@ The 'tracker' section should contain an array of MogileFS trackers.
 Testing
 -------
 
-Tests where performed on Ubuntu 11.10.
+Tests where performed on Ubuntu 12.04.
 
 To get tests running I installed MogileFS as described in the quickstart:
 https://code.google.com/p/mogilefs/wiki/QuickStartGuide
@@ -94,4 +103,6 @@ parse it correctly.
 A test adapter is implemented to allow for application testing without having a live
 MogileFS running
 
-Naming convention, and design tries to follow that of the Zend Framework 1.x
+Naming convention, and design tries to follow that of the Zend Framework 1.x. This also
+includes sub optimal require_once calls, for compatibility. I reccomend you use an 
+autoloader instead.
