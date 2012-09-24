@@ -166,7 +166,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 				curl_setopt($ch[$i], CURLOPT_CONNECTTIMEOUT, 1);
 				curl_setopt($ch[$i], CURLOPT_TIMEVALUE, 1);
 				curl_setopt($ch[$i], CURLOPT_FOLLOWLOCATION, false);
-				curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, false); // Don't echo result, return instead
+				curl_setopt($ch[$i], CURLOPT_RETURNTRANSFER, true); // Don't echo result, return instead
 				curl_setopt($ch[$i], CURLOPT_HEADER, 0); // Don't include the header
 				curl_setopt($ch[$i], CURLOPT_FRESH_CONNECT, 1); // Don't use cache
 				curl_multi_add_handle($mh, $ch[$i]);
