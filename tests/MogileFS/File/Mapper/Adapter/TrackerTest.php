@@ -1,7 +1,4 @@
 <?php
-require_once 'MogileFS/File.php';
-require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
-require_once 'MogileFS/File/Mapper/Adapter/Tracker.php';
 /**
  * 
  * Test case for tracker (native) adapter
@@ -10,6 +7,7 @@ require_once 'MogileFS/File/Mapper/Adapter/Tracker.php';
  * @group MogileFS
  * @group Adapter
  * @group Tracker
+ * @group Functional
  */
 class TrackerTest extends PHPUnit_Framework_TestCase
 {
@@ -47,7 +45,7 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals('default', $info['class']);
 		$this->assertEquals(filesize($this->_configFile), $info['size']);
 		$this->_tracker->delete($key);
-		
+
 		$this->assertNull($this->_tracker->findInfo($key));
 	}
 
@@ -78,9 +76,7 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 		$key2 = 'testFile2';
 		$this->_tracker->saveFile($key2, $this->_configFile);
 
-		$pathsArray = $this->_tracker->fetchAllPaths(array(
-					$key, $key2
-				));
+		$pathsArray = $this->_tracker->fetchAllPaths(array($key, $key2));
 		$this->_tracker->delete($key);
 		$this->_tracker->delete($key2);
 
@@ -115,9 +111,7 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Tracker();
 		try {
-			$adapter->fetchAllPaths(array(
-						new Exception('')
-					)); // Not valid value
+			$adapter->fetchAllPaths(array(new Exception(''))); // Not valid value
 		} catch (MogileFS_Exception $exc) {
 			$this->assertLessThan(200, $exc->getCode(), 'Got unexpected exception code');
 			$this->assertGreaterThanOrEqual(100, $exc->getCode(), 'Got unexpected exception code');
@@ -193,11 +187,11 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 		}
 		$this->fail('Did not get MogileFS_Exception exception');
 	}
-	
+
 	/**
-	* Argument validation test
-	* Expecting MogileFS_Exception with 1XX code
-	*/
+	 * Argument validation test
+	 * Expecting MogileFS_Exception with 1XX code
+	 */
 	public function testSaveFileValidation()
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Tracker();
@@ -210,11 +204,11 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 		}
 		$this->fail('Did not get MogileFS_Exception exception');
 	}
-	
+
 	/**
-	* Argument validation test
-	* Expecting MogileFS_Exception with 1XX code
-	*/
+	 * Argument validation test
+	 * Expecting MogileFS_Exception with 1XX code
+	 */
 	public function testSaveFile2Validation()
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Tracker();

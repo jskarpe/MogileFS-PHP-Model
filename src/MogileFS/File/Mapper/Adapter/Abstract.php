@@ -14,25 +14,25 @@ abstract class MogileFS_File_Mapper_Adapter_Abstract
 	 * @var array
 	 */
 	private $options;
-	
+
 	public function __construct(array $options = null)
 	{
 		if (null !== $options) {
 			$this->setOptions($options);
 		}
 	}
-	
+
 	public function setOptions(array $options)
 	{
 		$this->options = $options;
 		return $this;
 	}
-	
+
 	public function getOptions()
 	{
 		return $this->options;
 	}
-	
+
 	/**
 	 * 
 	 * Looks up paths for key
@@ -40,22 +40,22 @@ abstract class MogileFS_File_Mapper_Adapter_Abstract
 	 * @return array of string uri paths
 	 */
 	abstract function findPaths($key);
-	
+
 	/**
 	 * 
 	 * Look up info such as class and fid
 	 * @param unknown_type $key
 	 */
 	abstract function findInfo($key);
-	
+
 	/**
-	*
-	* Looks up paths for key
-	* @param array $keys
-	* @return array of string uri paths indexed by key
-	*/
+	 *
+	 * Looks up paths for key
+	 * @param array $keys
+	 * @return array of string uri paths indexed by key
+	 */
 	abstract function fetchAllPaths(array $keys);
-	
+
 	/**
 	 * 
 	 * Saves file to MogileFS
@@ -63,7 +63,7 @@ abstract class MogileFS_File_Mapper_Adapter_Abstract
 	 * @param string $file
 	 */
 	abstract function saveFile($key, $file, $class = null);
-	
+
 	/**
 	 * 
 	 * Renames a key

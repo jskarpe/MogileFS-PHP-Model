@@ -1,6 +1,4 @@
 <?php
-require_once 'MogileFS/File.php';
-require_once 'MogileFS/File/Mapper.php';
 /**
  *
  * Test MogileFS_File model
@@ -31,11 +29,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 		$this->assertInstanceOf('MogileFS_File', $file->setFile($this->getTestFile()));
 		$this->assertInstanceOf('MogileFS_File', $file->setKey('key'));
 		$this->assertInstanceOf('MogileFS_File', $file->setMapper(new MogileFS_File_Mapper()));
-		$this
-				->assertInstanceOf('MogileFS_File',
-						$file->setPaths(array(
-									'http://mypath.com/123.fid'
-								)));
+		$this->assertInstanceOf('MogileFS_File', $file->setPaths(array('http://mypath.com/123.fid')));
 		$this->assertInstanceOf('MogileFS_File', $file->setSize(321));
 
 		$this->assertEquals('dev', $file->getClass());
@@ -44,9 +38,7 @@ class FileTest extends PHPUnit_Framework_TestCase
 		$this->assertEquals($this->getTestFile(), $file->getFile());
 		$this->assertEquals('key', $file->getKey());
 		$this->assertEquals(new MogileFS_File_Mapper(), $file->getMapper());
-		$this->assertEquals(array(
-					'http://mypath.com/123.fid'
-				), $file->getPaths());
+		$this->assertEquals(array('http://mypath.com/123.fid'), $file->getPaths());
 		$this->assertEquals(321, $file->getSize());
 	}
 
@@ -63,25 +55,17 @@ class FileTest extends PHPUnit_Framework_TestCase
 
 	public function testToAndFromArray()
 	{
-		$fileArray = array(
-				'class' => 'default',
-				'domain' => 'toast',
-				'fid' => 123,
-				'file' => $this->getTestFile(),
-				'key' => 'key',
-				'paths' => array(
-					'http://mypath.com/123.fid'
-				),
-				'size' => 321
+		$fileArray = array('class' => 'default', 'domain' => 'toast', 'fid' => 123, 'file' => $this->getTestFile(),
+				'key' => 'key', 'paths' => array('http://mypath.com/123.fid'), 'size' => 321
 		);
 		$file = new MogileFS_File($fileArray);
 		$this->assertEquals($fileArray, $file->toArray());
 	}
-	
+
 	/**
-	* Argument validation test
-	* Expecting MogileFS_Exception with 1XX code
-	*/
+	 * Argument validation test
+	 * Expecting MogileFS_Exception with 1XX code
+	 */
 	public function testFileValidation()
 	{
 		$file = new MogileFS_File();

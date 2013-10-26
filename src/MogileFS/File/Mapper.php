@@ -14,7 +14,7 @@ class MogileFS_File_Mapper
 	 * @var array
 	 */
 	protected $_options;
-	
+
 	/**
 	 * 
 	 * Holds instance of adapter
@@ -51,10 +51,8 @@ class MogileFS_File_Mapper
 		if (!$this->_adapter instanceof MogileFS_File_Mapper_Adapter_Abstract) {
 			$options = $this->getOptions();
 			if (!isset($options['adapter'])) {
-				require_once 'MogileFS/Exception.php';
 				throw new MogileFS_Exception(
-						__METHOD__
-								. ' No adapter set, and no \'adapter\' section with adapter options found',
+						__METHOD__ . ' No adapter set, and no \'adapter\' section with adapter options found',
 						MogileFS_Exception::MISSING_OPTION);
 			}
 
@@ -62,11 +60,10 @@ class MogileFS_File_Mapper
 				$this->setAdapter($options['adapter']);
 				return $this->_adapter;
 			}
-			
-			$default = (isset($options['defaultadapter'])) ? $options['defaultadapter'] : 'MogileFS_File_Mapper_Adapter_Tracker';
 
-			$adapterFile = str_replace('_', '/', $default).'.php';
-			require_once $adapterFile;
+			$default = (isset($options['defaultadapter'])) ? $options['defaultadapter']
+					: 'MogileFS_File_Mapper_Adapter_Tracker';
+
 			$this->setAdapter(new $default($options['adapter']));
 		}
 		return $this->_adapter;
@@ -74,7 +71,6 @@ class MogileFS_File_Mapper
 
 	public function find($key, $eagerLoad = false)
 	{
-		require_once 'MogileFS/File.php';
 		$file = new MogileFS_File();
 		$file->setKey($key);
 		$file->setMapper($this);
@@ -84,7 +80,7 @@ class MogileFS_File_Mapper
 		if (null === $result) {
 			return null;
 		}
-		
+
 		$file->setPaths($result);
 
 		if (false !== $eagerLoad) {
@@ -113,10 +109,7 @@ class MogileFS_File_Mapper
 			return null;
 		}
 		foreach ($paths as $key => $pathArray) {
-			$file = new MogileFS_File(array(
-				'key' => $key,
-				'paths' => $pathArray
-			));
+			$file = new MogileFS_File(array('key' => $key, 'paths' => $pathArray));
 			$file->setMapper($this);
 			if (false !== $eagerLoad) {
 				$this->findInfo($file);
@@ -135,13 +128,12 @@ class MogileFS_File_Mapper
 	public function fetchFile(MogileFS_File $file)
 	{
 		if (!$file->isValid()) {
-			throw new MogileFS_Exception(
-					__METHOD__ . ' Cannot fetch file from invalid file model',
+			throw new MogileFS_Exception(__METHOD__ . ' Cannot fetch file from invalid file model',
 					MogileFS_Exception::INVALID_ARGUMENT);
 		}
 
 		$localFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $file->getKey();
-		
+
 		$fp = fopen($localFile, 'w');
 		$url = reset($file->getPaths());
 
@@ -163,22 +155,36 @@ class MogileFS_File_Mapper
 	 * @throws MogileFS_Exception
 	 * @return MogileFS_File stored in MogileFS
 	 */
-	public function save(MogileFS_File $file)
+	public function save(MogileFS_File $file, $retry = 0)
 	{
 		if (!$file->isValid()) {
 			throw new MogileFS_Exception(__METHOD__ . ' Cannot save invalid file model',
 					MogileFS_Exception::INVALID_ARGUMENT);
 		}
-		
 		$file->setMapper($this);
-		$this->getAdapter()
-				->saveFile($file->getKey(), $file->getFile(false), $file->getClass(false));
-		
+		$adapter = $this->getAdapter();
+		try {
+			$adapter->saveFile($file->getKey(), $file->getFile(false), $file->getClass(false));
+		} catch (MogileFS_Exception $e) {
+			switch ($e->getCode()) {
+				case MogileFS_Exception::TRACKER_ERROR:
+				case MogileFS_Exception::SERVER_ERROR:
+					$options = $this->getOptions();
+					if (isset($options['upload_retries']) && $retry < $options['upload_retries']) {
+						$delay = (isset($options['retry_delay'])) ? $options['retry_delay'] : 5;
+						sleep($delay);
+						return $this->save($file, $retry++);
+					}
+				default:
+					throw $e;
+			}
+		}
+
 		$storedFile = $this->find($file->getKey(), false);
 		$storedFileArray = $storedFile->toArray();
 		unset($storedFileArray['file']); // MogileFS has no information about local file
 		$file->fromArray($storedFileArray);
-		
+
 		return $file;
 	}
 

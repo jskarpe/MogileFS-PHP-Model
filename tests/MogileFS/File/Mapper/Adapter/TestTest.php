@@ -1,7 +1,4 @@
 <?php
-require_once 'MogileFS/File.php';
-require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
-require_once 'MogileFS/File/Mapper/Adapter/Test.php';
 /**
  *
  * Test MogileFS_File_Mapper_Adapter_Test functions
@@ -14,19 +11,13 @@ class TestAdapterTest extends PHPUnit_Framework_TestCase
 
 	public function testSettersAndGetters()
 	{
-		$testAdapter = new MogileFS_File_Mapper_Adapter_Test(array(
-			'domain' => 'toast'
-		));
+		$testAdapter = new MogileFS_File_Mapper_Adapter_Test(array('domain' => 'toast'));
 
 		$key = 'MyTestKey';
 
-		
-		
 		$file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid();
 		file_put_contents($file, 'test data');
-		$testFile = new MogileFS_File(array(
-			'key' => $key, 'file' => $file
-		));
+		$testFile = new MogileFS_File(array('key' => $key, 'file' => $file));
 
 		$result = $testAdapter->saveFile($key, $testFile->getFile());
 		unlink($file);
@@ -40,11 +31,11 @@ class TestAdapterTest extends PHPUnit_Framework_TestCase
 		$this->assertNull($testAdapter->rename($key, $key . '2'));
 		$this->assertNull($testAdapter->delete($key));
 	}
-	
+
 	/**
-	* Argument validation test
-	* Expecting MogileFS_Exception with 1XX code
-	*/
+	 * Argument validation test
+	 * Expecting MogileFS_Exception with 1XX code
+	 */
 	public function testSaveFileValidation()
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Test();

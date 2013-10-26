@@ -21,7 +21,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 	{
 		// Validate argument
 		if (!is_string($key) || empty($key)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Expected non-empty string argument, got: ' . (gettype($key) === 'string') ? $key
 							: gettype($key), MogileFS_Exception::INVALID_ARGUMENT);
@@ -59,7 +58,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 	{
 		// Validate argument
 		if (!is_string($key) || empty($key)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Expected non-empty string argument, got: ' . (gettype($key) === 'string') ? $key
 							: gettype($key), MogileFS_Exception::INVALID_ARGUMENT);
@@ -93,7 +91,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		$paths = array();
 		foreach ($keys as $key) {
 			if (!is_string($key) || empty($key)) {
-				require_once 'MogileFS/Exception.php';
 				throw new MogileFS_Exception(
 						__METHOD__ . ' Expected non-empty string argument, got: ' . (gettype($key) === 'string') ? $key
 								: gettype($key), MogileFS_Exception::INVALID_ARGUMENT);
@@ -113,7 +110,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 	public function rename($fromKey, $toKey)
 	{
 		if (!is_string($fromKey) || empty($fromKey)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Expected non-empty fromKey string argument, got: '
 							. (gettype($fromKey) === 'string') ? $fromKey : gettype($fromKey),
@@ -121,7 +117,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		}
 
 		if (!is_string($toKey) || empty($toKey)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Expected non-empty toKey string argument, got: ' . (gettype($toKey) === 'string') ? $toKey
 							: gettype($toKey), MogileFS_Exception::INVALID_ARGUMENT);
@@ -141,20 +136,17 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 	public function saveFile($key, $file, $class = null)
 	{
 		if (!is_string($key) || empty($key)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Expected non-empty string argument, got: ' . (gettype($key) === 'string') ? $key
 							: gettype($key), MogileFS_Exception::INVALID_ARGUMENT);
 		}
 
 		if (!file_exists($file)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' File not found: ' . $file, MogileFS_Exception::INVALID_ARGUMENT);
 		}
 
 		$fh = fopen($file, 'r');
 		if ($fh === false) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Failed to open ' . $file . ' for reading',
 					MogileFS_Exception::FOPEN_FAILIURE);
 		}
@@ -192,15 +184,13 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		$statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 		curl_close($ch);
 		if ($response === false || 0 !== $errno) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . " $error for $uri", MogileFS_Exception::UNKNOWN_ERROR);
 		}
 
-		if (200 != $statusCode) {
-			require_once 'MogileFS/Exception.php';
+		if (200 != $statusCode && 201 != $statusCode) {
 			throw new MogileFS_Exception(
-					__METHOD__ . ' PUT to \'' . $uri . '\' failed. Expected status code 200, got: ' . $statusCode
-							. ', and body: ' . $response, MogileFS_Exception::SERVER_ERROR);
+					__METHOD__ . ' PUT to \'' . $uri . '\' failed. Expected status code 200 or 201, got: '
+							. $statusCode . ', and body: ' . $response, MogileFS_Exception::SERVER_ERROR);
 		}
 
 		$params = array('key' => $key, 'devid' => $location['devid'], 'fid' => $location['fid'],
@@ -228,7 +218,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 	public function delete($key)
 	{
 		if (!is_string($key) || empty($key)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' Expected non-empty string argument, got: ' . (gettype($key) === 'string') ? $key
 							: gettype($key), MogileFS_Exception::INVALID_ARGUMENT);
@@ -248,14 +237,12 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 	{
 		// Validate arguments
 		if (null === $cmd) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Empty argument', MogileFS_Exception::EMPTY_ARGUMENT);
 		}
 
 		// Read options
 		$options = $this->getOptions();
 		if (!isset($options['domain'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Mandatory option \'domain\' missing from options',
 					MogileFS_Exception::MISSING_OPTION);
 		}
@@ -276,7 +263,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		$socket = $this->_getConnection();
 		$request = $cmd . ' ' . $params;
 		if (false === fwrite($socket, $request . "\n")) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Write failed', MogileFS_Exception::WRITE_FAILED);
 		}
 
@@ -291,7 +277,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 				fclose($this->_getConnection());
 				return $this->_sendRequest($cmd, $args, false);
 			}
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Read failed', MogileFS_Exception::READ_FAILED);
 		}
 
@@ -305,7 +290,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 					return trim($words[1]);
 					break;
 				default:
-					require_once 'MogileFS/Exception.php';
 					throw new MogileFS_Exception(
 							__METHOD__ . ' Fatal MogileFS error: \'' . $words[1] . '\' from request: \'' . $request
 									. '\'', MogileFS_Exception::TRACKER_ERROR);
@@ -313,7 +297,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 			}
 		}
 
-		require_once 'MogileFS/Exception.php';
 		throw new MogileFS_Exception(__METHOD__ . ' Unable to parse response: ' . $line,
 				MogileFS_Exception::TRACKER_ERROR);
 	}
@@ -331,13 +314,11 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		// Read options
 		$options = $this->getOptions();
 		if (!isset($options['tracker'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Required option \'tracker\' not found in options',
 					MogileFS_Exception::MISSING_OPTION);
 		}
 
 		if (!is_array($options['tracker'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Option \'tracker\' must be an array',
 					MogileFS_Exception::INVALID_OPTION);
 		}
@@ -358,7 +339,6 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		}
 
 		if (!is_resource($this->_socket) || feof($this->_socket)) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' Failed to obtain connection: ' . $errstr,
 					MogileFS_Exception::CONNECT_FAILED);
 		}

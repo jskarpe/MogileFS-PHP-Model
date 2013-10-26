@@ -1,7 +1,4 @@
 <?php
-require_once 'MogileFS/File/Mapper/Adapter/Abstract.php';
-require_once 'MogileFS/File/Mapper/Adapter/Mysql.php';
-require_once 'MogileFS/File/Mapper/Adapter/Tracker.php';
 /**
  * 
  * Test case for mysql read only adapter
@@ -10,6 +7,7 @@ require_once 'MogileFS/File/Mapper/Adapter/Tracker.php';
  * @group MogileFS
  * @group Adapter
  * @group Tracker
+ * @group Functional
  */
 class MysqlAdapterTest extends PHPUnit_Framework_TestCase
 {
@@ -26,35 +24,29 @@ class MysqlAdapterTest extends PHPUnit_Framework_TestCase
 
 	public function testInstance()
 	{
-		$this
-				->assertInstanceOf('MogileFS_File_Mapper_Adapter_Abstract',
-						new MogileFS_File_Mapper_Adapter_Mysql());
+		$this->assertInstanceOf('MogileFS_File_Mapper_Adapter_Abstract', new MogileFS_File_Mapper_Adapter_Mysql());
 	}
 
 	public function testSettersAndGetters()
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Mysql();
-		$this
-				->assertInstanceOf('MogileFS_File_Mapper_Adapter_Mysql',
-						$adapter->setHostsUp(array(
-									1, 2, 3, 4
-								)));
-		$this->assertEquals(array(
-					1, 2, 3, 4
-				), $adapter->getHostsUp());
+		$this->assertInstanceOf('MogileFS_File_Mapper_Adapter_Mysql', $adapter->setHostsUp(array(1, 2, 3, 4)));
+		$this->assertEquals(array(1, 2, 3, 4), $adapter->getHostsUp());
 
 	}
 
 	public function testFetchAllPaths()
 	{
+		// Setup
 		$key1 = 'testFile1';
 		$file1 = $this->_trackerAdapter->saveFile($key1, $this->_configFile);
 		$key2 = 'testFile2';
 		$file2 = $this->_trackerAdapter->saveFile($key2, $this->_configFile);
 
-		$files = $this->_mysqlAdapter->fetchAllPaths(array(
-					$key1, $key2
-				));
+		// Test
+		$files = $this->_mysqlAdapter->fetchAllPaths(array($key1, $key2));
+		
+		// Tear down
 		$this->_trackerAdapter->delete($key1);
 		$this->_trackerAdapter->delete($key2);
 
@@ -68,9 +60,7 @@ class MysqlAdapterTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testInvalidMysqlOptionsValidation()
 	{
-		$adapter = new MogileFS_File_Mapper_Adapter_Mysql(array(
-			'domain' => 'toast'
-		));
+		$adapter = new MogileFS_File_Mapper_Adapter_Mysql(array('domain' => 'toast'));
 		try {
 			$adapter->getMysql();
 		} catch (MogileFS_Exception $exc) {
@@ -87,10 +77,7 @@ class MysqlAdapterTest extends PHPUnit_Framework_TestCase
 	 */
 	public function testInvalidMysqlOptions2Validation()
 	{
-		$adapter = new MogileFS_File_Mapper_Adapter_Mysql(
-				array(
-					'domain' => 'toast', 'pdo_options' => 'host:lala'
-				));
+		$adapter = new MogileFS_File_Mapper_Adapter_Mysql(array('domain' => 'toast', 'pdo_options' => 'host:lala'));
 		try {
 			$adapter->getMysql();
 		} catch (MogileFS_Exception $exc) {
@@ -108,9 +95,7 @@ class MysqlAdapterTest extends PHPUnit_Framework_TestCase
 	public function testInvalidMysqlOptions3Validation()
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Mysql(
-				array(
-					'domain' => 'toast', 'pdo_options' => 'host:lala', 'username' => 'mogile'
-				));
+				array('domain' => 'toast', 'pdo_options' => 'host:lala', 'username' => 'mogile'));
 		try {
 			$adapter->getMysql();
 		} catch (MogileFS_Exception $exc) {
@@ -231,9 +216,7 @@ class MysqlAdapterTest extends PHPUnit_Framework_TestCase
 	{
 		$adapter = new MogileFS_File_Mapper_Adapter_Mysql();
 		try {
-			$adapter->fetchAllPaths(array(
-						'arsf'
-					));
+			$adapter->fetchAllPaths(array('arsf'));
 		} catch (MogileFS_Exception $exc) {
 			$this->assertLessThan(200, $exc->getCode(), 'Got unexpected exception code');
 			$this->assertGreaterThanOrEqual(100, $exc->getCode(), 'Got unexpected exception code');

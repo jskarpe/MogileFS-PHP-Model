@@ -36,21 +36,13 @@ class MogileFS_File_Mapper_Adapter_Test extends MogileFS_File_Mapper_Adapter_Abs
 	{
 		$options = $this->getOptions();
 		if (!isset($options['domain'])) {
-			require_once 'MogileFS/Exception.php';
-			throw new MogileFS_Exception(
-					__METHOD__ . ' Mandatory option \'domain\' missing from options',
+			throw new MogileFS_Exception(__METHOD__ . ' Mandatory option \'domain\' missing from options',
 					MogileFS_Exception::MISSING_OPTION);
 		}
 
 		$fid = rand(0, 1000);
-		$this->_saveResult[$key] = array(
-				'fid' => $fid,
-				'key' => $key,
-				'size' => 123,
-				'paths' => array(
-					'file://' . $file
-				),
-				'domain' => $options['domain'],
+		$this->_saveResult[$key] = array('fid' => $fid, 'key' => $key, 'size' => 123,
+				'paths' => array('file://' . $file), 'domain' => $options['domain'],
 				'class' => (null === $class) ? 'default' : $class
 		);
 

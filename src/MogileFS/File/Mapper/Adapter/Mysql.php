@@ -14,16 +14,12 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 
 	public function findPaths($key)
 	{
-		require_once 'MogileFS/Exception.php';
-		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
-				MogileFS_Exception::UNSUPPORTED_METHOD);
+		throw new MogileFS_Exception(__METHOD__ . ' Not supported', MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function findInfo($key)
 	{
-		require_once 'MogileFS/Exception.php';
-		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
-				MogileFS_Exception::UNSUPPORTED_METHOD);
+		throw new MogileFS_Exception(__METHOD__ . ' Not supported', MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function fetchAllPaths(array $keys)
@@ -31,10 +27,9 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 		if (empty($keys)) {
 			return array();
 		}
-		
+
 		$options = $this->getOptions();
 		if (!isset($options['domain'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(__METHOD__ . ' No \'domain\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
@@ -67,8 +62,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 		$result = $stm->execute($parms);
 		if (!$result) {
 			$error = $stm->errorInfo();
-			throw new MogileFS_Exception(__METHOD__ . ' ' . $error[2],
-					MogileFS_Exception::READ_FAILED);
+			throw new MogileFS_Exception(__METHOD__ . ' ' . $error[2], MogileFS_Exception::READ_FAILED);
 		}
 		$resultArray = $stm->fetchAll();
 
@@ -79,9 +73,8 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 			$fid = sprintf('%010d', $row['fid']);
 			$port = (empty($row['http_get_port'])) ? $row['http_port'] : $row['http_get_port'];
 			$port = ($port == '80') ? null : ':' . $port;
-			$uri = 'http://' . $row['hostip'] . $port . '/dev' . $row['devid'] . '/'
-					. substr($fid, 0, 1) . '/' . substr($fid, 1, 3) . '/' . substr($fid, 4, 3)
-					. '/' . $fid . '.fid';
+			$uri = 'http://' . $row['hostip'] . $port . '/dev' . $row['devid'] . '/' . substr($fid, 0, 1) . '/'
+					. substr($fid, 1, 3) . '/' . substr($fid, 4, 3) . '/' . $fid . '.fid';
 			$paths[$row['dkey']][] = $uri;
 		}
 
@@ -97,30 +90,22 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 
 	public function listKeys($prefix = null, $lastKey = null, $limit = null)
 	{
-		require_once 'MogileFS/Exception.php';
-		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
-				MogileFS_Exception::UNSUPPORTED_METHOD);
+		throw new MogileFS_Exception(__METHOD__ . ' Not supported', MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function saveFile($key, $file, $class = null)
 	{
-		require_once 'MogileFS/Exception.php';
-		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
-				MogileFS_Exception::UNSUPPORTED_METHOD);
+		throw new MogileFS_Exception(__METHOD__ . ' Not supported', MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function rename($fromKey, $toKey)
 	{
-		require_once 'MogileFS/Exception.php';
-		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
-				MogileFS_Exception::UNSUPPORTED_METHOD);
+		throw new MogileFS_Exception(__METHOD__ . ' Not supported', MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	public function delete($key)
 	{
-		require_once 'MogileFS/Exception.php';
-		throw new MogileFS_Exception(__METHOD__ . ' Not supported',
-				MogileFS_Exception::UNSUPPORTED_METHOD);
+		throw new MogileFS_Exception(__METHOD__ . ' Not supported', MogileFS_Exception::UNSUPPORTED_METHOD);
 	}
 
 	/**
@@ -146,8 +131,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 			$result = $stm->execute();
 			if (!$result) {
 				$error = $stm->errorInfo();
-				throw new MogileFS_Exception(__METHOD__ . ' ' . $error[2],
-						MogileFS_Exception::READ_FAILED);
+				throw new MogileFS_Exception(__METHOD__ . ' ' . $error[2], MogileFS_Exception::READ_FAILED);
 			}
 			$hosts = $stm->fetchAll();
 
@@ -157,8 +141,7 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 			$mh = curl_multi_init();
 			$i = 0;
 			foreach ($hosts as $hostRow) {
-				$port = (empty($hostRow['http_get_port'])) ? $hostRow['http_port']
-						: $hostRow['http_get_port'];
+				$port = (empty($hostRow['http_get_port'])) ? $hostRow['http_port'] : $hostRow['http_get_port'];
 				$server = $hostRow['hostip'] . ':' . $port;
 				$serversTried[] = $server;
 				$ch[$i] = curl_init();
@@ -201,9 +184,8 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 
 			if (empty($hostsUp)) {
 				throw new MogileFS_Exception(
-						__METHOD__ . ' No server responsed within ' . $maxRunTime
-								. ' seconds. Tried: ' . implode(',', $serversTried),
-						MogileFS_Exception::READ_FAILED);
+						__METHOD__ . ' No server responsed within ' . $maxRunTime . ' seconds. Tried: '
+								. implode(',', $serversTried), MogileFS_Exception::READ_FAILED);
 			}
 
 			$this->_hostsUp = $hostsUp;
@@ -220,29 +202,24 @@ class MogileFS_File_Mapper_Adapter_Mysql extends MogileFS_File_Mapper_Adapter_Ab
 		$options = $this->getOptions();
 
 		if (!isset($options['pdo_options'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
-					__METHOD__
-							. ' No mysql client set, and no \'pdo_options\' option found in config',
+					__METHOD__ . ' No mysql client set, and no \'pdo_options\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
 
 		if (!isset($options['username'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' No mysql client set, and no \'username\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
 
 		if (!isset($options['password'])) {
-			require_once 'MogileFS/Exception.php';
 			throw new MogileFS_Exception(
 					__METHOD__ . ' No mysql client set, and no \'password\' option found in config',
 					MogileFS_Exception::INVALID_CONFIGURATION);
 		}
 
-		$this->_mysql = new PDO('mysql:' . $options['pdo_options'], $options['username'],
-				$options['password']);
+		$this->_mysql = new PDO('mysql:' . $options['pdo_options'], $options['username'], $options['password']);
 
 		return $this->_mysql;
 	}

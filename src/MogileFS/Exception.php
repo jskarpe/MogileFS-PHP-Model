@@ -12,7 +12,7 @@ class MogileFS_Exception extends Exception
 	const INVALID_ARGUMENT = 101;
 	const MISSING_OPTION = 103;
 	const MISSING_MAPPER = 104;
-	
+
 	const MISSING_CLIENT = 150;
 	const INVALID_CONFIGURATION = 151;
 	const INVALID_OPTION = 173;

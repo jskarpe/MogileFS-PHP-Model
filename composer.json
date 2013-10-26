@@ -1,0 +1,19 @@
+{
+    "name": "yuav/mogilefs",
+    "type": "library",
+    "description": "MogileFS PHP Model",
+    "homepage": "https://github.com/Yuav/MogileFS-PHP-Model",
+    "authors": [
+        {
+            "name": "Jon Skarpeteig",
+            "email": "lesspublic@gmail.com"
+        }
+    ],
+    "require": {
+        "php": ">=5.3.3"
+    },
+    "autoload": {
+        "psr-0": { "MogileFS": "src/" }
+    },
+    "minimum-stability": "dev"
+}
