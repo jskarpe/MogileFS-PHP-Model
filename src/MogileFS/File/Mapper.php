@@ -135,7 +135,8 @@ class MogileFS_File_Mapper
 		$localFile = sys_get_temp_dir() . DIRECTORY_SEPARATOR . $file->getKey();
 
 		$fp = fopen($localFile, 'w');
-		$url = reset($file->getPaths());
+		$paths = $file->getPaths();
+		$url = reset($paths);
 
 		$ch = curl_init($url);
 		curl_setopt($ch, CURLOPT_FILE, $fp);
