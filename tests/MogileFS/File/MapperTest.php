@@ -81,6 +81,7 @@ class MapperTest extends PHPUnit_Framework_TestCase
 		$mapper = new MogileFS_File_Mapper();
 		$this->_testFile->setMapper($mapper);
 		$this->assertFileExists($this->_testFile->getFile(true));
+		$this->assertGreaterThan(0, filesize($this->_testFile->getFile()));
 	}
 
 	public function testGetAdapter()
