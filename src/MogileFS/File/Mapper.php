@@ -189,6 +189,10 @@ class MogileFS_File_Mapper
 						$delay = (isset($options['retry_delay'])) ? $options['retry_delay'] : 5;
 						sleep($delay);
 						return $this->save($file, $retry++);
+					} else {
+						throw new MogileFS_Exception(
+								'Failed saving file \'' . $file->getKey() . '\'. ' . $e->getMessage() . ' Tried '
+										. ($retry + 1) . ' time(s).', $e->getCode());
 					}
 				default:
 					throw $e;
