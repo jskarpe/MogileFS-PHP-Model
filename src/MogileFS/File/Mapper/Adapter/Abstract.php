@@ -57,6 +57,16 @@ abstract class MogileFS_File_Mapper_Adapter_Abstract
 	abstract function fetchAllPaths(array $keys);
 
 	/**
+	 * List keys.
+	 *
+	 * @param string $prefix OPTIONAL Key prefix
+	 * @param string $afterKey OPTIONAL Return keys listed after this key
+	 * @param int $limit OPTIONAL Maximum number of keys to return
+	 * @return array Array of keys
+	 */
+	abstract function listKeys($prefix = null, $afterKey = null, $limit = null);
+	
+	/**
 	 * 
 	 * Saves file to MogileFS
 	 * @param string $key

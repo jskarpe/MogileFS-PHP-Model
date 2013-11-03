@@ -14,6 +14,15 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 	protected $_configFile;
 	protected $_tracker;
 
+	protected $_tempFiles = array();
+
+	public function __destruct()
+	{
+		foreach ($this->_tempFiles as $file) {
+			@unlink($file);
+		}
+	}
+
 	public function setUp()
 	{
 		$this->_configFile = realpath(dirname(__FILE__) . '/../../../config.php');
@@ -101,6 +110,26 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 			return;
 		}
 		$this->fail('Did not get MogileFS_Exception exception');
+	}
+
+	public function testListKeys()
+	{
+		$adapter = $this->_tracker;
+
+		$keys = array('MyTestKey2', 'MyTestKey1', 'MyTestKey3', 'N2', 'N1');
+		foreach ($keys as $key) {
+			$file = $this->_createTempFile();
+			$adapter->saveFile($key, $file);
+		}
+
+		$this->assertEquals(array('MyTestKey1', 'MyTestKey2', 'MyTestKey3'), $adapter->listKeys('My'));
+		$this->assertEquals(array('N2'), $adapter->listKeys('N', 'N1'));
+		$this->assertEquals(array('MyTestKey2'), $adapter->listKeys('My', 'MyTestKey1', 1));
+		$this->assertEquals(array(), $adapter->listKeys('NotExistingKeyPrefix'));
+
+		foreach ($keys as $key) {
+			$adapter->delete($key);
+		}
 	}
 
 	/**
@@ -220,5 +249,13 @@ class TrackerTest extends PHPUnit_Framework_TestCase
 			return;
 		}
 		$this->fail('Did not get MogileFS_Exception exception');
+	}
+
+	protected function _createTempFile()
+	{
+		$file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid();
+		file_put_contents($file, 'test data - ' . rand(0, 1000000));
+		$this->_tempFiles[] = $file;
+		return $file;
 	}
 }

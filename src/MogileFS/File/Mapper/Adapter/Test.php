@@ -32,6 +32,38 @@ class MogileFS_File_Mapper_Adapter_Test extends MogileFS_File_Mapper_Adapter_Abs
 		return $result;
 	}
 
+	public function listKeys($prefix = null, $afterKey = null, $limit = null)
+	{
+		if (null !== $limit && !is_numeric($limit)) {
+			throw new InvalidArgumentException(
+					__METHOD__ . ' Expected limit argument to be numeric or null. Got: ' . gettype($limit));
+		}
+
+		$keys = array_keys($this->_saveResult);
+		sort($keys);
+
+		$realLimit = (null === $limit) ? INF : $limit;
+		$keysToReturn = array();
+		$afterKeyHit = (null === $afterKey) ? true : false;
+		foreach ($keys as $key) {
+			// Filter keys
+			if ($afterKeyHit && (null === $prefix || 0 === strpos($key, $prefix))) {
+				$keysToReturn[] = $key;
+			}
+			
+			if ($key == $afterKey) {
+				$afterKeyHit = true;
+			}
+
+			// Limit reached
+			if (count($keysToReturn) == $realLimit) {
+				return $keysToReturn;
+			}
+		}
+		
+		return $keysToReturn;
+	}
+
 	public function saveFile($key, $file, $class = null)
 	{
 		$options = $this->getOptions();

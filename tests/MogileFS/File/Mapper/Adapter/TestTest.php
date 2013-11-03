@@ -9,6 +9,15 @@
 class TestAdapterTest extends PHPUnit_Framework_TestCase
 {
 
+	protected $_tempFiles = array();
+
+	public function __destruct()
+	{
+		foreach ($this->_tempFiles as $file) {
+			@unlink($file);
+		}
+	}
+
 	public function testSettersAndGetters()
 	{
 		$testAdapter = new MogileFS_File_Mapper_Adapter_Test(array('domain' => 'toast'));
@@ -47,5 +56,33 @@ class TestAdapterTest extends PHPUnit_Framework_TestCase
 			return;
 		}
 		$this->fail('Did not get MogileFS_Exception exception');
+	}
+
+	public function testListKeys()
+	{
+		$adapter = new MogileFS_File_Mapper_Adapter_Test(array('domain' => 'toast'));
+
+		$keys = array('MyTestKey2', 'MyTestKey1', 'MyTestKey3', 'N2', 'N1');
+		foreach ($keys as $key) {
+			$file = $this->_createTempFile();
+			$adapter->saveFile($key, $file);
+		}
+
+		$this->assertEquals(array('MyTestKey1', 'MyTestKey2', 'MyTestKey3', 'N1', 'N2'), $adapter->listKeys());
+		$this->assertEquals(array('MyTestKey1', 'MyTestKey2', 'MyTestKey3'), $adapter->listKeys('My'));
+		$this->assertEquals(array('N1', 'N2'), $adapter->listKeys(null, 'MyTestKey3'));
+		$this->assertEquals(array('N2'), $adapter->listKeys('N', 'N1'));
+		$this->assertEquals(array('MyTestKey1', 'MyTestKey2'), $adapter->listKeys(null, null, 2));
+		$this->assertEquals(array('MyTestKey2', 'MyTestKey3', 'N1'), $adapter->listKeys(null, 'MyTestKey1', 3));
+		$this->assertEquals(array('MyTestKey2'), $adapter->listKeys('My', 'MyTestKey1', 1));
+		$this->assertEquals(array(), $adapter->listKeys('NotExistingKeyPrefix'));
+	}
+
+	protected function _createTempFile()
+	{
+		$file = sys_get_temp_dir() . DIRECTORY_SEPARATOR . uniqid();
+		file_put_contents($file, 'test data - ' . rand(0, 1000000));
+		$this->_tempFiles[] = $file;
+		return $file;
 	}
 }

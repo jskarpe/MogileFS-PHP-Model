@@ -79,6 +79,24 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 
 	/**
 	 * (non-PHPdoc)
+	 * @see MogileFS_File_Mapper_Adapter_Abstract::listKeys()
+	 */
+	public function listKeys($prefix = null, $afterKey = null, $limit = null)
+	{
+		$result = $this->_sendRequest('LIST_KEYS', array('prefix' => $prefix, 'after' => $afterKey, 'limit' => $limit));
+		if ($result == 'none_match') {
+			return array();
+		}
+		
+		parse_str($result, $keys);
+		unset($keys['key_count'], $keys['next_after']);
+		sort($keys);
+		
+		return $keys;
+	}
+
+	/**
+	 * (non-PHPdoc)
 	 * @see MogileFS_File_Mapper_Adapter_Abstract::fetchAllPaths()
 	 */
 	public function fetchAllPaths(array $keys)
@@ -287,6 +305,8 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 		} elseif ($words[0] == 'ERR') {
 			switch (trim($words[1])) {
 				case 'unknown_key':
+				case 'empty_file':
+				case 'none_match':
 					return trim($words[1]);
 					break;
 				default:
