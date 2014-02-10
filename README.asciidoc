@@ -16,6 +16,18 @@ paths in one query natively.
 Example usage
 -------------
 
+add with composer
+
+[source,json]
+-----
+{
+    "require": {
+        "yuav/mogilefs": "dev-master"
+    }
+}
+-----
+
+[source,php]
 -----
 <?php
 // Config example
@@ -23,7 +35,7 @@ $config = array(
 	'adapter' => array(
 		'tracker' => array('127.0.0.1','127.0.0.2:1234'),
 		'domain' => 'dev'
-	);
+	)
 );
 
 // Save
