@@ -76,7 +76,7 @@ class MapperTest extends PHPUnit_Framework_TestCase
 
 	public function testFetchFile()
 	{
-		$this->_testFile->setPaths(array('http://www.test.com'));
+		$this->_testFile->setPaths(array('https://www.test.com'));
 
 		$mapper = new MogileFS_File_Mapper();
 		$this->_testFile->setMapper($mapper);
