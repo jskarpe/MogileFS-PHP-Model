@@ -1,6 +1,8 @@
 MogileFS PHP Model
 ==================
 
+image:https://travis-ci.org/Yuav/MogileFS-PHP-Model.svg?branch=master["Build Status", link="https://travis-ci.org/Yuav/MogileFS-PHP-Model"]
+
 This library is an abstraction model for a file stored in MogileFS.
 The idea is to have a clearly defined api to use for storing and retrieving 
 files from MogileFS.
