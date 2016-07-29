@@ -8,6 +8,7 @@
  */
 class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_Abstract
 {
+	const DEFAULT_PORT = 7001;
 	/**
 	 * Socket resource
 	 */
@@ -345,14 +346,21 @@ class MogileFS_File_Mapper_Adapter_Tracker extends MogileFS_File_Mapper_Adapter_
 
 		foreach ($options['tracker'] as $host) {
 			$parts = parse_url($host);
-			if (!isset($parts['port'])) {
-				$parts['port'] = 7001;
+			$hostname = '';
+			if (isset($parts['host'])) {
+				$hostname = $parts['host'];
+			} elseif (isset($parts['path']) && $parts['path'] == $host) {
+				$hostname = $parts['path'];
+			}
+			$port = self::DEFAULT_PORT;
+			if (isset($parts['port'])) {
+				$port = $parts['port'];
 			}
 
 			$errno = null;
 			$errstr = null;
 			$requestTimeout = isset($options['request_timeout']) ? $options['request_timeout'] : null;
-			$this->_socket = fsockopen($parts['host'], $parts['port'], $errno, $errstr, $requestTimeout);
+			$this->_socket = fsockopen($hostname, $port, $errno, $errstr, $requestTimeout);
 			if ($this->_socket) {
 				break;
 			}
