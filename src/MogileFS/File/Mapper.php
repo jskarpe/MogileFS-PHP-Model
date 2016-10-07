@@ -162,6 +162,43 @@ class MogileFS_File_Mapper
 		return $file;
 	}
 
+    public function fetchResourceHandler(MogileFS_File $file)
+    {
+        if (!$file->isValid()) {
+            throw new MogileFS_Exception(__METHOD__ . ' Cannot fetch file from invalid file model',
+                MogileFS_Exception::INVALID_ARGUMENT);
+        }
+
+        $paths = $file->getPaths();
+        $url = reset($paths);
+
+        $ch = curl_init($url);
+        $bodyStream = fopen('php://temp', 'w+');
+
+        curl_setopt($ch, CURLOPT_FILE, $bodyStream);
+
+        $response = curl_exec($ch);
+
+        // Check for errors
+        $error = curl_error($ch);
+        $errno = curl_errno($ch);
+        $statusCode = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        curl_close($ch);
+
+        rewind($bodyStream);
+
+        if ($response === false || 0 !== $errno) {
+            throw new MogileFS_Exception(__METHOD__ . " $error for $url", MogileFS_Exception::UNKNOWN_ERROR);
+        }
+
+        if (200 != $statusCode) {
+            throw new MogileFS_Exception(
+                __METHOD__ . ' GET \'' . $url . '\' failed. Expected status code 200, got: ' . $statusCode,
+                MogileFS_Exception::SERVER_ERROR);
+        }
+        return $bodyStream;
+    }
+
 	/**
 	 * 
 	 * Uploads file to MogileFS, and populate model with
