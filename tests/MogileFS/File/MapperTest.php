@@ -140,4 +140,17 @@ class MapperTest extends PHPUnit_Framework_TestCase
 		}
 		$this->fail('Did not get MogileFS_Exception exception');
 	}
+
+    /**
+     * Test fetching resource handler
+     */
+    public function testFetchResourceHandler()
+    {
+        $mapper = new MogileFS_File_Mapper(array('adapter' => $this->_testAdapter));
+        $this->_testFile->setPaths(array('https://www.test.com'));
+
+        $fileHandler = $mapper->fetchResourceHandler($this->_testFile);
+        $this->assertTrue(is_resource($fileHandler));
+        $this->assertNotEmpty(stream_get_contents($fileHandler));
+    }
 }
